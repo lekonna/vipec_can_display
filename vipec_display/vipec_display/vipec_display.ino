@@ -40,7 +40,7 @@ int a,b,c,d,current;
 int page_type = RUNTIME;
 
 
-data_channel channel[8] = {
+data_channel channel[] = {
     { "OiT", 1, 1, -50, 9999 },
     { "OiP", 1, 1, 0  , 9999 },
     { "AFR", 1,10, 0  , 9999 },
@@ -92,8 +92,6 @@ void setup() {
   }
   Serial.println("Can init ok");
   sLCD.print("Can Init ok");
-  Serial.println(sizeof(channel));
-  Serial.println("is the channel size");
   delay(1000);
   clear_lcd();
   current = 0;
@@ -101,9 +99,9 @@ void setup() {
 void read_channel()
 {
   Canbus.read_msg(a,b,c,d);
-  if(a*3 < sizeof(channel) ) process_value(a*3,b);
-  if(a*3+1 < sizeof(channel) ) process_value(a*3+1,c);
-  if(a*3+2 < sizeof(channel) ) process_value(a*3+2,d);
+  if(a*3 < NR_OF_CHANNELS ) process_value(a*3,b);
+  if(a*3+1 < NR_OF_CHANNELS ) process_value(a*3+1,c);
+  if(a*3+2 < NR_OF_CHANNELS ) process_value(a*3+2,d);
 }
 void process_value( int ch, int val )
 {
@@ -112,6 +110,7 @@ void process_value( int ch, int val )
   if (value > channel[ch].max_value ) channel[ch].max_value = value;
   if (value < channel[ch].min_value ) channel[ch].min_value = value;
 }
+
 void display_page() {
   static int old_page;
   if(old_page!=current) clear_lcd();
@@ -144,13 +143,13 @@ void loop() {
   for(int i=0;i<4;i++ )  read_channel();
   display_page();
   print_to_serial();
-  delay(100);
+  delay(40);
 }
 
 void print_to_serial()
 {
   Serial.print(millis());
-  for( int i = 0; i < sizeof(channel)/sizeof(data_channel) ; i++ ) {
+  for( int i = 0; i < NR_OF_CHANNELS ; i++ ) {
     if(i) Serial.print(",");
     else Serial.print(":");
     Serial.print(channel[i].name);
