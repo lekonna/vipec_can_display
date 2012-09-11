@@ -39,6 +39,7 @@ int a,b,c,d,current;
 
 int page_type = RUNTIME;
 
+unsigned int last_click = 0;
 
 data_channel channel[] = {
     { "OiT", 1, 1, -50, 9999 },
@@ -48,7 +49,12 @@ data_channel channel[] = {
     { "Map", 1, 1, 0, 9999 },
     { "IaT", 1, 1, -50, 9999 },
     { "Ign", 1, 1, -1000  , 9999 },
-    { "Vbt", 1, 10, 0  , 9999 }
+    { "Vbt", 1, 10, 0  , 9999 },
+    { "Spd", 1, 10, 0, 9999 },
+    { "ECT", 1, 1, -50, 9999 },
+    { "Idc", 1, 1, 0  , 9999 },
+    { "lmc", 1, 1, 0  , 9999 }
+
 };
 
 
@@ -62,8 +68,7 @@ static int lcd_putchar(char ch, FILE* stream)
 
 
 void flip_page () {
-  static unsigned int last_click;
-  if (millis()-200 > last_click ) {
+  if (millis()-100 > last_click ) {
     current+=4;
     if (current > NR_OF_CHANNELS - 4) current=0;
     last_click = millis();
