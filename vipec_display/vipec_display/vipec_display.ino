@@ -42,6 +42,7 @@ int page_type = RUNTIME;
 unsigned int last_click = 0;
 
 data_channel channel[] = {
+// name, multiplier, divider, offset   
     { "OiT", 1, 1, -50, 9999 },
     { "OiP", 1, 1, 0  , 9999 },
     { "AFR", 1,10, 0  , 9999 },
@@ -145,10 +146,10 @@ void display_page() {
 }
 
 void loop() {
-  for(int i=0;i<4;i++ )  read_channel();
+  for(int i=0;i<NR_OF_CHANNELS;i++ )  read_channel();
   display_page();
   print_to_serial();
-  delay(40);
+  delay(10);
 }
 
 void print_to_serial()
