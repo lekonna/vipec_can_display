@@ -40,6 +40,7 @@ int a,b,c,d,current;
 int page_type = RUNTIME;
 
 unsigned int last_click = 0;
+int flip_request;
 
 data_channel channel[] = {
 // name, multiplier, divider, offset   
@@ -69,11 +70,7 @@ static int lcd_putchar(char ch, FILE* stream)
 
 
 void flip_page () {
-  if (millis()-100 > last_click ) {
-    current+=4;
-    if (current > NR_OF_CHANNELS - 4) current=0;
-    last_click = millis();
- }
+  flip_request = 1;
 }
 
 void setup() {
@@ -85,7 +82,7 @@ void setup() {
 
   pinMode(3, INPUT);
   digitalWrite(3,HIGH);
-  attachInterrupt(1,flip_page,RISING);
+  attachInterrupt(1,flip_page,FALLING);
   /* setup the stream for the lcd to be able to use printf formating */
   fdev_setup_stream( &lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE);
   sLCD.write(COMMAND2);  /* set the display backlight to max */
@@ -147,9 +144,17 @@ void display_page() {
 
 void loop() {
   for(int i=0;i<NR_OF_CHANNELS;i++ )  read_channel();
-  display_page();
-  print_to_serial();
-  delay(10);
+  if (millis()-500 > last_click  && flip_request )
+  {
+    current+=4;
+    if (current > NR_OF_CHANNELS - 4) current=0;
+    last_click = millis();
+    flip_request = 0;
+ }
+ flip_request = 0;
+ display_page();
+ print_to_serial();
+ delay(10);
 }
 
 void print_to_serial()
